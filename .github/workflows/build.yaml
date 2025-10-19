@@ -29,19 +29,19 @@ jobs:
 
       - name: Set up global environment variables
         run: |
-          echo "REGISTRY_USERNAME=${{ github.repository_owner }}" >> $GITHUB_ENV
+          echo "REGISTRY_USERNAME=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
       - name: Prepare (checkouts & patches)
         run: make checkouts patches
 
       - name: Kernel
-        run: make kernel
+        run: make REGISTRY=ghcr.io REGISTRY_USERNAME=${{ env.REGISTRY_USERNAME }} kernel
 
-      - name: Overlay
-        run: make overlay
+      - name: Overlay  
+        run: make REGISTRY=ghcr.io REGISTRY_USERNAME=${{ env.REGISTRY_USERNAME }} overlay
 
       - name: Installer
-        run: make installer
+        run: make REGISTRY=ghcr.io REGISTRY_USERNAME=${{ env.REGISTRY_USERNAME }} installer
 
       - name: Release
         if: startsWith(github.ref, 'refs/tags/v')
