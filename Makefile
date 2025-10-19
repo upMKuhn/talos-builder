@@ -98,6 +98,9 @@ overlay:
 #
 # Installer/Image
 #
+#
+# Installer/Image
+#
 .PHONY: installer
 installer:
 	cd "$(CHECKOUTS_DIRECTORY)/talos" && \
@@ -105,7 +108,7 @@ installer:
 			REGISTRY=$(REGISTRY) USERNAME=$(REGISTRY_USERNAME) PUSH=true \
 			PKG_KERNEL=$(REGISTRY)/$(REGISTRY_USERNAME)/kernel:$(PKGS_TAG) \
 			INSTALLER_ARCH=arm64 PLATFORM=linux/arm64 \
-			IMAGER_ARGS="--overlay-name=rpi5 --overlay-image=$(REGISTRY)/$(REGISTRY_USERNAME)/sbc-raspberrypi5:$(SBCOVERLAY_TAG) --system-extension-image=$(EXTENSIONS)" \
+			IMAGER_ARGS="--overlay-name=rpi5 --overlay-image=$(REGISTRY)/$(REGISTRY_USERNAME)/sbc-raspberrypi5:$(SBCOVERLAY_TAG) --system-extension-image=$(EXTENSIONS) --system-extension-image=ghcr.io/siderolabs/iscsi-tools:v0.2.0 --system-extension-image=ghcr.io/siderolabs/tailscale:1.88.3" \
 			kernel initramfs imager installer-base installer && \
 		docker \
 			run --rm -t -v ./_out:/out -v /dev:/dev --privileged $(REGISTRY)/$(REGISTRY_USERNAME)/imager:$(TALOS_TAG) \
@@ -113,9 +116,9 @@ installer:
 			--base-installer-image="$(REGISTRY)/$(REGISTRY_USERNAME)/installer:$(TALOS_TAG)" \
 			--overlay-name="rpi5" \
 			--overlay-image="$(REGISTRY)/$(REGISTRY_USERNAME)/sbc-raspberrypi5:$(SBCOVERLAY_TAG)" \
-			--system-extension-image="$(EXTENSIONS)"
-			--system-extension-image ghcr.io/siderolabs/iscsi-tools:v0.2.0 \
-  			-system-extension-image ghcr.io/siderolabs/tailscale:1.88.3 \
+			--system-extension-image="$(EXTENSIONS)" \
+			--system-extension-image="ghcr.io/siderolabs/iscsi-tools:v0.2.0" \
+			--system-extension-image="ghcr.io/siderolabs/tailscale:1.88.3"
 
 
 
