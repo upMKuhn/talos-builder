@@ -114,6 +114,8 @@ installer:
 			--overlay-name="rpi5" \
 			--overlay-image="$(REGISTRY)/$(REGISTRY_USERNAME)/sbc-raspberrypi5:$(SBCOVERLAY_TAG)" \
 			--system-extension-image="$(EXTENSIONS)"
+			--system-extension-image ghcr.io/siderolabs/iscsi-tools:v0.2.0 \
+  			-system-extension-image ghcr.io/siderolabs/tailscale:1.88.3 \
 
 
 
