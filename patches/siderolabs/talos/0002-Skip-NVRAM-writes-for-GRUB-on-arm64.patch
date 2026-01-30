@@ -1,0 +1,32 @@
+From 2e0ce2789f93b64890d1a9624965bcd85a38d61a Mon Sep 17 00:00:00 2001
+From: Martin Kuhn <martin@kuhn.host>
+Date: Sat, 31 Jan 2026 00:49:27 +0100
+Subject: [PATCH] Skip NVRAM writes for GRUB on arm64
+
+On arm64 platforms like RPi5, the firmware does not support EFI runtime
+SetVariable, causing grub-install to fail when efibootmgr tries to
+create boot entries. Since arm64-efi systems boot by convention
+(finding BOOTAA64.efi on the ESP), NVRAM boot entries are unnecessary.
+
+Pass --no-nvram to grub-install unconditionally on arm64 to allow
+PXE installs and rolling upgrades to succeed.
+---
+ .../machined/pkg/runtime/v1alpha1/bootloader/grub/install.go    | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/internal/app/machined/pkg/runtime/v1alpha1/bootloader/grub/install.go b/internal/app/machined/pkg/runtime/v1alpha1/bootloader/grub/install.go
+index 2597d721a..597a47400 100644
+--- a/internal/app/machined/pkg/runtime/v1alpha1/bootloader/grub/install.go
++++ b/internal/app/machined/pkg/runtime/v1alpha1/bootloader/grub/install.go
+@@ -173,7 +173,7 @@ func (c *Config) install(opts options.InstallOptions) (*options.InstallResult, e
+ 			args = append(args, "--efi-directory="+filepath.Join(opts.MountPrefix, constants.EFIMountPoint))
+ 		}
+ 
+-		if opts.ImageMode {
++		if opts.ImageMode || opts.Arch == arm64 {
+ 			args = append(args, "--no-nvram")
+ 		}
+ 
+-- 
+2.51.1
+

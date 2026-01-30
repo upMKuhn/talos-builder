@@ -1,0 +1,21 @@
+arch: arm64
+platform: metal
+secureboot: false
+baseProfileName: metal
+input:
+  baseInstaller:
+    imageRef: __BASE_INSTALLER__
+  systemExtensions:
+    - imageRef: __EXTENSIONS_ISCSI__
+    - imageRef: __EXTENSIONS_TAILSCALE__
+    - imageRef: __EXTENSIONS_UTIL_LINUX__
+overlay:
+  name: rpi5
+  image:
+    imageRef: __OVERLAY_IMAGE__
+output:
+  kind: image
+  outFormat: .zst
+  imageOptions:
+    diskFormat: raw
+    bootloader: grub
