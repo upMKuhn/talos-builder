@@ -65,7 +65,8 @@ patches-pkgs:
 patches-talos:
 	cd "$(CHECKOUTS_DIRECTORY)/talos" && \
 		git am "$(PATCHES_DIRECTORY)/siderolabs/talos/0001-Patched-for-Raspberry-Pi-5.patch" && \
-		git am "$(PATCHES_DIRECTORY)/siderolabs/talos/0002-Skip-NVRAM-writes-for-GRUB-on-arm64.patch"
+		git am "$(PATCHES_DIRECTORY)/siderolabs/talos/0002-Skip-NVRAM-writes-for-GRUB-on-arm64.patch" && \
+		git am "$(PATCHES_DIRECTORY)/siderolabs/talos/0003-Force-GRUB-bootloader-on-arm64.patch"
 
 patches: patches-pkgs patches-talos
 
