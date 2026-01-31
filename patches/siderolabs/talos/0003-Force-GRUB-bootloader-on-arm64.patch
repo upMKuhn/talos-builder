@@ -1,6 +1,6 @@
-From b1603719906b8e4d97c379f62a62a5ff8bbe7b79 Mon Sep 17 00:00:00 2001
+From 3a18908370238bfefaecf73d2702f73ff2201e08 Mon Sep 17 00:00:00 2001
 From: Martin Kuhn <martin@kuhn.host>
-Date: Sat, 31 Jan 2026 10:17:40 +0100
+Date: Sat, 31 Jan 2026 12:32:26 +0100
 Subject: [PATCH] Force GRUB bootloader on arm64
 
 On arm64 platforms like RPi5, the UEFI firmware (U-Boot) exposes
@@ -15,7 +15,7 @@ flag (patched separately) and arm64-efi systems boot by convention.
  1 file changed, 5 insertions(+)
 
 diff --git a/internal/app/machined/pkg/runtime/v1alpha1/bootloader/bootloader.go b/internal/app/machined/pkg/runtime/v1alpha1/bootloader/bootloader.go
-index 30ae77e6b..b906752a7 100644
+index f084e09..5c388c1 100644
 --- a/internal/app/machined/pkg/runtime/v1alpha1/bootloader/bootloader.go
 +++ b/internal/app/machined/pkg/runtime/v1alpha1/bootloader/bootloader.go
 @@ -8,6 +8,7 @@ package bootloader

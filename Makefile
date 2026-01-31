@@ -1,6 +1,6 @@
-PKG_VERSION = v1.11.0
-TALOS_VERSION = v1.11.5
-SBCOVERLAY_VERSION = main
+PKG_VERSION = v1.12.0
+TALOS_VERSION = v1.12.2
+SBCOVERLAY_VERSION = v0.1.8
 
 REGISTRY ?= ghcr.io
 REGISTRY_USERNAME ?= talos-rpi5
@@ -13,7 +13,7 @@ EXTENSIONS_UTIL_LINUX ?= ghcr.io/siderolabs/util-linux-tools:2.41.1
 
 PKG_REPOSITORY = https://github.com/siderolabs/pkgs.git
 TALOS_REPOSITORY = https://github.com/siderolabs/talos.git
-SBCOVERLAY_REPOSITORY = https://github.com/talos-rpi5/sbc-raspberrypi5.git
+SBCOVERLAY_REPOSITORY = https://github.com/siderolabs/sbc-raspberrypi.git
 
 CHECKOUTS_DIRECTORY := $(PWD)/checkouts
 PATCHES_DIRECTORY := $(PWD)/patches
@@ -21,7 +21,7 @@ PROFILES_DIRECTORY := $(PWD)/profiles
 
 PKGS_TAG = $(shell cd $(CHECKOUTS_DIRECTORY)/pkgs && git describe --tag --always --dirty --match v[0-9]\*)
 TALOS_TAG = $(shell cd $(CHECKOUTS_DIRECTORY)/talos && git describe --tag --always --dirty --match v[0-9]\*)
-SBCOVERLAY_TAG = $(shell cd $(CHECKOUTS_DIRECTORY)/sbc-raspberrypi5 && git describe --tag --always --dirty)-$(PKGS_TAG)
+SBCOVERLAY_TAG = $(shell cd $(CHECKOUTS_DIRECTORY)/sbc-raspberrypi && git describe --tag --always --dirty)-$(PKGS_TAG)
 
 #
 # Help
@@ -45,12 +45,12 @@ help:
 checkouts:
 	git clone -c advice.detachedHead=false --branch "$(PKG_VERSION)" "$(PKG_REPOSITORY)" "$(CHECKOUTS_DIRECTORY)/pkgs"
 	git clone -c advice.detachedHead=false --branch "$(TALOS_VERSION)" "$(TALOS_REPOSITORY)" "$(CHECKOUTS_DIRECTORY)/talos"
-	git clone -c advice.detachedHead=false --branch "$(SBCOVERLAY_VERSION)" "$(SBCOVERLAY_REPOSITORY)" "$(CHECKOUTS_DIRECTORY)/sbc-raspberrypi5"
+	git clone -c advice.detachedHead=false --branch "$(SBCOVERLAY_VERSION)" "$(SBCOVERLAY_REPOSITORY)" "$(CHECKOUTS_DIRECTORY)/sbc-raspberrypi"
 
 checkouts-clean:
 	rm -rf "$(CHECKOUTS_DIRECTORY)/pkgs"
 	rm -rf "$(CHECKOUTS_DIRECTORY)/talos"
-	rm -rf "$(CHECKOUTS_DIRECTORY)/sbc-raspberrypi5"
+	rm -rf "$(CHECKOUTS_DIRECTORY)/sbc-raspberrypi"
 
 
 
@@ -91,12 +91,12 @@ kernel:
 .PHONY: overlay
 overlay:
 	@echo SBCOVERLAY_TAG = $(SBCOVERLAY_TAG)
-	cd "$(CHECKOUTS_DIRECTORY)/sbc-raspberrypi5" && \
+	cd "$(CHECKOUTS_DIRECTORY)/sbc-raspberrypi" && \
 		$(MAKE) \
 			REGISTRY=$(REGISTRY) USERNAME=$(REGISTRY_USERNAME) IMAGE_TAG=$(SBCOVERLAY_TAG) PUSH=true \
 			PKGS_PREFIX=$(REGISTRY)/$(REGISTRY_USERNAME) PKGS=$(PKGS_TAG) \
 			INSTALLER_ARCH=arm64 PLATFORM=linux/arm64 \
-			sbc-raspberrypi5
+			sbc-raspberrypi
 
 
 
@@ -110,11 +110,11 @@ installer:
 			REGISTRY=$(REGISTRY) USERNAME=$(REGISTRY_USERNAME) PUSH=true \
 			PKG_KERNEL=$(REGISTRY)/$(REGISTRY_USERNAME)/kernel:$(PKGS_TAG) \
 			INSTALLER_ARCH=arm64 PLATFORM=linux/arm64 \
-			IMAGER_ARGS="--overlay-name=rpi5 --overlay-image=$(REGISTRY)/$(REGISTRY_USERNAME)/sbc-raspberrypi5:$(SBCOVERLAY_TAG) --system-extension-image=$(EXTENSIONS_ISCSI) --system-extension-image=$(EXTENSIONS_TAILSCALE) --system-extension-image=$(EXTENSIONS_UTIL_LINUX)" \
+			IMAGER_ARGS="--overlay-name=rpi_5 --overlay-image=$(REGISTRY)/$(REGISTRY_USERNAME)/sbc-raspberrypi:$(SBCOVERLAY_TAG) --system-extension-image=$(EXTENSIONS_ISCSI) --system-extension-image=$(EXTENSIONS_TAILSCALE) --system-extension-image=$(EXTENSIONS_UTIL_LINUX)" \
 			kernel initramfs imager installer-base installer && \
 		sed \
 			-e 's|__BASE_INSTALLER__|$(REGISTRY)/$(REGISTRY_USERNAME)/installer:$(TALOS_TAG)|' \
-			-e 's|__OVERLAY_IMAGE__|$(REGISTRY)/$(REGISTRY_USERNAME)/sbc-raspberrypi5:$(SBCOVERLAY_TAG)|' \
+			-e 's|__OVERLAY_IMAGE__|$(REGISTRY)/$(REGISTRY_USERNAME)/sbc-raspberrypi:$(SBCOVERLAY_TAG)|' \
 			-e 's|__EXTENSIONS_ISCSI__|$(EXTENSIONS_ISCSI)|' \
 			-e 's|__EXTENSIONS_TAILSCALE__|$(EXTENSIONS_TAILSCALE)|' \
 			-e 's|__EXTENSIONS_UTIL_LINUX__|$(EXTENSIONS_UTIL_LINUX)|' \
